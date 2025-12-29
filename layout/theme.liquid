@@ -257,6 +257,8 @@
       }
     {% endstyle %}
 
+    {{ 'announcement-bar.css' | asset_url | stylesheet_tag }}
+
     {{ 'base.css' | asset_url | stylesheet_tag }}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
@@ -374,5 +376,38 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+      <script src="{{ 'announcement.js' | asset_url }}" defer="defer"></script>
+
+
   </body>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('MobileMenuToggle');
+    const drawer = document.getElementById('MobileDrawer');
+    const closeBtn = document.getElementById('MobileDrawerClose');
+    const overlay = document.querySelector('.mobile-drawer__overlay');
+
+    if (!toggle || !drawer) return;
+
+    toggle.addEventListener('click', () => {
+      drawer.classList.add('active');
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      drawer.classList.remove('active');
+    });
+
+    overlay?.addEventListener('click', () => {
+      drawer.classList.remove('active');
+    });
+
+    document.querySelectorAll('.mobile-menu__toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.nextElementSibling.classList.toggle('active');
+      });
+    });
+  });
+</script>
+
 </html>
