@@ -1,0 +1,59 @@
+
+{{ 'recently-viewed.css' | asset_url | stylesheet_tag }}
+
+<section class="recently-viewed">
+  <div class="page-width">
+    <h2 class="recently-viewed__title">
+      {{ section.settings.heading }}
+    </h2>
+
+    <div class="recently-viewed__grid" id="recentlyViewedGrid">
+        {% comment %} render prod {% endcomment %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('recentlyViewedGrid');
+    const handles = JSON.parse(localStorage.getItem('recent')) || [];
+
+    if (!handles.length) return;
+
+    handles.forEach(handle => {
+      fetch(`/products/${handle}.js`)
+        .then(res => res.json())
+        .then(product => {
+          const html = `
+            <div class="recent-product-card">
+              <a href="${product.url}">
+                <img src="${product.images[0]}" alt="${product.title}">
+                <h3>${product.title}</h3>
+                <p>₹${(product.price / 100).toFixed(2)}</p>
+              </a>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', html);
+        });
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Recently Viewed",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recently Viewed"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Recently Viewed"
+    }
+  ]
+}
+{% endschema %}

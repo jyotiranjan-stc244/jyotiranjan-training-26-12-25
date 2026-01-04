@@ -1,0 +1,341 @@
+{{ 'product-look.css' | asset_url | stylesheet_tag }}
+
+<section class="shop-the-look">
+  <div class="shop-the-look__image-wrapper">
+    {% if section.settings.image != blank %}
+      <img
+        src="{{ section.settings.image | image_url: width: 1600 }}"
+        alt="Product Look"
+        class="shop-the-look__image"
+        loading="lazy"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+      >
+    {% endif %}
+
+    {% for block in section.blocks %}
+      {% assign product = block.settings.product %}
+      {% if product != blank %}
+        {% assign variant = product.selected_or_first_available_variant %}
+
+        <button
+          class="shop-the-look__marker"
+          style="top: {{ block.settings.top }}%; left: {{ block.settings.left }}%;"
+          data-product-handle="{{ product.handle }}"
+          aria-label="View {{ product.title }}"
+          {{ block.shopify_attributes }}
+        >
+          <span></span>
+        </button>
+
+        <div
+          class="shop-the-look__popup"
+          data-popup="{{ product.handle }}"
+          style="
+            top: {{ block.settings.popup_top }}%;
+            left: {{ block.settings.popup_left }}%;
+          "
+        >
+          <div class="popup-card">
+            <img
+              src="{{ product.featured_image | image_url: width: 300 }}"
+              alt="{{ product.title }}"
+              width="300"
+              height="300"
+              loading="lazy"
+            >
+
+            <div class="popup-content">
+              <h4>{{ product.title }}</h4>
+
+              <span class="product-desc">
+                {{ product.description | strip_html | truncate: 80 }}
+              </span>
+
+              <h4 class="product-price">₹{{ variant.price }}</h4>
+
+              {% if variant.compare_at_price > variant.price %}
+                {% assign discount = variant.compare_at_price
+                  | minus: variant.price
+                  | times: 100
+                  | divided_by: variant.compare_at_price
+                  | round
+                %}
+                <span class="discount-badge"> {{ discount }}% OFF </span>
+              {% endif %}
+
+              <div class="detail-cart">
+                <button
+                  class="add-to-cart-btn"
+                  data-variant-id="{{ variant.id }}"
+                >
+                  Add to Bag
+                </button>
+
+                <a href="{{ product.url }}" class="view-link"> View </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const markers = document.querySelectorAll('.shop-the-look__marker');
+    const popups = document.querySelectorAll('.shop-the-look__popup');
+    let activePopup = null;
+
+    const closeAllPopups = () => {
+      popups.forEach((popup) => popup.classList.remove('active'));
+      activePopup = null;
+    };
+
+    markers.forEach((marker) => {
+      marker.addEventListener('click', (e) => {
+        e.stopPropagation();
+
+        const handle = marker.dataset.productHandle;
+        const popup = document.querySelector(`[data-popup="${handle}"]`);
+        if (!popup) return;
+
+        if (activePopup === popup) {
+          popup.classList.remove('active');
+          activePopup = null;
+          return;
+        }
+
+        closeAllPopups();
+        popup.classList.add('active');
+        activePopup = popup;
+      });
+    });
+
+    popups.forEach((popup) => {
+      popup.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    });
+
+    document.addEventListener('click', closeAllPopups);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAllPopups();
+    });
+
+    function updateCartIcon(sections) {
+      if (!sections?.['cart-icon-bubble']) return;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(sections['cart-icon-bubble'], 'text/html');
+
+      const newIcon = doc.querySelector('#cart-icon-bubble');
+      const currentIcon = document.querySelector('#cart-icon-bubble');
+
+      if (!newIcon || !currentIcon) return;
+
+      currentIcon.innerHTML = newIcon.innerHTML;
+    }
+
+    function updateCartDrawer(res) {
+      const cartDrawerHtml = res.sections?.['cart-drawer'];
+
+            // Assuming `res.sections['cart-drawer']` contains the server-rendered drawer HTML
+const parser = new DOMParser();
+const doc = parser.parseFromString(res.sections['cart-drawer'], 'text/html');
+const newCartDrawerContent = doc.querySelector('cart-drawer').innerHTML;
+
+// Existing drawer element
+const drawerEl = document.querySelector('cart-drawer');
+
+if (drawerEl) {
+  // Replace inner HTML, but keep <cart-drawer> element intact
+  drawerEl.innerHTML = newCartDrawerContent;
+
+  // Ensure class names reflect the new state
+  drawerEl.classList.remove('is-empty');
+  if (drawerEl.querySelector('.cart-item')) {
+    drawerEl.classList.add('active');
+  } else {
+    drawerEl.classList.add('is-empty');
+  }
+
+  // Call open() if available
+  if (typeof drawerEl.open === 'function') {
+    drawerEl.open();
+  } else {
+    drawerEl.classList.add('active');
+    document.body.classList.add('overflow-hidden');
+  }
+}
+
+
+    }
+
+    function closeCartDrawer() {
+  const drawer = document.querySelector('cart-drawer');
+  if (!drawer) return;
+
+  if (typeof drawer.close === 'function') {
+    drawer.close();
+  } else {
+    drawer.classList.remove('active');
+    document.body.classList.remove('overflow-hidden');
+  }
+}
+
+
+    document.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+
+        if (btn.classList.contains('is-loading')) return;
+
+        const variantId = btn.dataset.variantId;
+        if (!variantId) return;
+
+        btn.classList.add('is-loading');
+        btn.disabled = true;
+        btn.innerText = 'Loading...';
+
+        try {
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              id: variantId,
+              quantity: 1,
+              properties: {
+                Location: 'ShopTheLook',
+              },
+              sections: ['cart-icon-bubble', 'cart-drawer'],
+              sections_url: window.location.pathname,
+            }),
+          });
+
+          if (!response.ok) throw new Error('Add to cart failed');
+
+          const res = await response.json();
+
+          const cartBubble = res.sections?.['cart-icon-bubble'];
+          if (cartBubble) {
+            const parser = new DOMParser();
+            const cartBubbleHtml = parser.parseFromString(cartBubble, 'text/html');
+
+            const oldContainer = document.querySelector('#cart-icon-bubble');
+            const newContainer =
+              cartBubbleHtml.querySelector('#shopify-section-cart-icon-bubble') ||
+              cartBubbleHtml.querySelector('#cart-icon-bubble');
+
+            if (oldContainer && newContainer) {
+              const oldBubble = oldContainer.querySelector('.cart-count-bubble');
+              const newBubble = newContainer.querySelector('.cart-count-bubble');
+
+              if (oldBubble && newBubble) {
+                // cart > 0 → cart > 0
+                oldBubble.innerHTML = newBubble.innerHTML;
+              } else if (!oldBubble && newBubble) {
+                // cart = 0 → cart > 0
+                oldContainer.insertAdjacentHTML('beforeend', newBubble.outerHTML);
+              }
+            }
+          }
+
+          updateCartDrawer(res);
+
+          btn.innerText = 'Added';
+        } catch (error) {
+          console.error(error);
+          btn.innerText = 'Error';
+        } finally {
+          btn.classList.remove('is-loading');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+  const drawer = document.querySelector('cart-drawer');
+
+  if (!drawer || !drawer.classList.contains('active')) return;
+
+  const overlay = drawer.querySelector('#CartDrawer-Overlay');
+
+  if (overlay && e.target === overlay) {
+    closeCartDrawer();
+  }
+});
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product Look",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Main image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_marker",
+      "name": "Product Marker",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "range",
+          "id": "top",
+          "label": "Marker Top position (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "left",
+          "label": "Marker Left position (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "popup_top",
+          "label": "Popup Top position (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "popup_left",
+          "label": "Popup Left position (%)",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 3
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Look"
+    }
+  ]
+}
+{% endschema %}

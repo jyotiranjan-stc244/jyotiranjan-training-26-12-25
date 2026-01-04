@@ -1,0 +1,73 @@
+
+
+.our-collection {
+  padding: 5rem 0;
+}
+.our-collection  .swiper-wrapper{
+  padding-bottom: 83px;
+}
+
+.our-collection  .our-collection__heading {
+  text-align: center;
+  color: #000000;
+  margin-bottom: 4rem;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0px;
+}
+
+.our-collection  .carousel {
+  overflow-x: clip;
+}
+
+
+.our-collection .our-collection-swiper .swiper-slide {
+  width: 200px;
+}
+
+.our-collection .single {
+  position: relative;
+  user-select: none;
+}
+
+.our-collection .single img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  pointer-events: none;
+  display: block;
+}
+
+.our-collection .our-collection__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+.our-collection .single:hover .our-collection__overlay {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .our-collection .our-collection-swiper .swiper-slide {
+    width: 280px;
+  }
+  .our-collection .our-collection__heading{
+    font-size: 19px;
+  }
+  .our-collection .swiper-wrapper{
+    padding: 0px;
+  }
+}

@@ -738,6 +738,27 @@
   </div>
 </product-info>
 
+{% if template.name == 'product' %}
+<script>
+  (function () {
+    const STORAGE_KEY = 'recent';
+    const MAX_ITEMS = 6;
+    const handle = "{{ product.handle }}";
+
+    let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+    items = items.filter(item => item !== handle);
+
+    items.unshift(handle);
+
+    items = items.slice(0, MAX_ITEMS);
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  })();
+</script>
+{% endif %}
+
+
 {% schema %}
 {
   "name": "t:sections.main-product.name",

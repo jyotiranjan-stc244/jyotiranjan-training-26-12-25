@@ -1,0 +1,89 @@
+{{ 'best-seller.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'best-seller.js' | asset_url }}" defer></script>
+
+<section class="best-seller">
+  <div class="page-width">
+    <div class="best-seller__container">
+      <div class="best-seller__content">
+        <h2>{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+
+        {% if section.settings.button_label != blank %}
+          <a href="{{ section.settings.button_link }}" class="best-seller__btn">
+            {{ section.settings.button_label }}
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="best-seller__slider">
+        <div
+          class="swiper bestSellerSwiper"
+          data-slides-desktop="{{ section.settings.slides_desktop }}"
+        >
+          <div class="swiper-wrapper">
+             {% assign coll = section.settings.collection %}
+            {% assign best_seller_collection = collections[coll] %}
+            {% for product in best_seller_collection.products limit: section.settings.products_limit %}
+              <div class="swiper-slide">
+                {% render 'best-seller-product', product: product %}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Best Seller",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Description",
+      "default": "Our most popular products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "slides_desktop",
+      "label": "Slides per view (Desktop)",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Best Seller"
+    }
+  ]
+}
+{% endschema %}
