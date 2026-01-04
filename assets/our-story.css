@@ -1,0 +1,148 @@
+.our-story * {
+  box-sizing: border-box;
+}
+
+.our-story {
+  padding: clamp(25px, 6vw, 70px) 20px;
+  background: #fff6ef;
+}
+
+.our-story__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 5vw, 60px);
+  align-items: center;
+}
+
+.our-story__media {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.our-story__media video,
+.our-story__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.our-story__content h2 {
+  font-size: clamp(22px, 3vw, 36px);
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+
+.our-story__description {
+  font-size: clamp(13px, 1.2vw, 15px);
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.our-story__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e6763d;
+  color: #fff;
+  padding: 12px 26px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.our-story .swiper {
+  margin-top: 20px;
+  padding-bottom: 40px;
+}
+
+.our-story .swiper-wrapper {
+  align-items: stretch;
+}
+
+.our-story__feature {
+  height: auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+}
+
+.our-story__feature img {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 6px;
+}
+
+.our-story__feature h4 {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.our-story__feature p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+  color: #555;
+}
+
+.our-story .swiper-button-prev,
+.our-story .swiper-button-next {
+  color: #e6763d;
+}
+
+.our-story__highlights {
+  max-width: 1200px;
+  margin: clamp(30px, 5vw, 60px) auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  text-align: center;
+}
+
+.our-story__highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #e6763d;
+  font-size: clamp(11px, 1.2vw, 14px);
+}
+
+.our-story__highlight img {
+  width: 28px;
+  height: auto;
+}
+
+@media (max-width: 991px) {
+  .our-story__container {
+    grid-template-columns: 1fr;
+  }
+
+  .our-story__media {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 480px) {
+  .our-story__button {
+    padding: 10px 22px;
+    font-size: 13px;
+  }
+
+  .our-story__feature {
+    padding: 14px;
+  }
+}
