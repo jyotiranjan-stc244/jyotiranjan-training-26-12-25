@@ -1,0 +1,45 @@
+<style>
+  .test-banner--{{ section.id }} .collection-banner a img{
+    width: 100%;
+  }
+</style>
+
+<section class="test-banner--{{ section.id }}">
+  {% if template.name == 'collection' and collection %}
+    {% assign banner_image = collection.metafields.custom.collection_banner %}
+    {% assign banner_link = collection.metafields.custom.banner_link %}
+
+    {% if banner_image %}
+      <div class="collection-banner">
+        <a href="{{ banner_link.value }}">
+          {{
+            banner_image
+            | image_url: width: 800
+            | image_tag:
+              alt: banner_image,
+              widths: '200,400,600,800,1000',
+              sizes: '(min-width: 1024px) 400px, 90vw',
+              loading: 'lazy',
+              decoding: 'async'
+          }}
+        </a>
+      </div>
+    {% endif %}
+  {% endif %}
+</section>
+
+{% comment %} <script>
+  let doctors = {{ collection.metafields.custom | json }};
+  console.log(doctors);
+</script> {% endcomment %}
+
+{% schema %}
+{
+  "settings": [],
+  "presets": [
+    {
+      "name": "test-banner"
+    }
+  ]
+}
+{% endschema %}

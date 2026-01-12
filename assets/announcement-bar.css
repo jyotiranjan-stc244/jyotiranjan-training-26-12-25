@@ -1,0 +1,44 @@
+
+.announcement-wrapper {
+ background: rgb(var(--color-background));
+ color: rgb(var(--color-foreground));
+ display: flex;
+ flex-direction: column;
+}
+
+.announcement-top,
+.announcement-bottom {
+  color: #fff;
+  text-align: center;
+}
+
+.announcement-text{
+  margin: 3px 0px;
+}
+
+.announcement-message {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.announcement-bottom p {
+  color: #fff;
+  font-size: 13px;
+}
+
+.countdown {
+  margin-left: 8px;
+}
+
+
+@media (max-width: 768px) {
+  .announcement-message,
+  .announcement-top p,
+  .announcement-bottom p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .countdown{
+    display: none;
+  }
+}

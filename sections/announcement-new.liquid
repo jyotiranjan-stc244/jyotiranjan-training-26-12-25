@@ -1,0 +1,94 @@
+
+{% if section.settings.enable %}
+  <div class="announcement-wrapper" >
+    <div class="announcement-top color-{{ section.settings.color_scheme_top }}">
+      <p class="announcement-text">
+        <span class="announcement-message bold">"{{ section.settings.promo_text }}"</span>
+
+          {% if section.settings.show_timer %}
+            <span
+              class="countdown"
+              data-end="{{ section.settings.end_time | replace: ' ', 'T' }}"
+            >
+              😍😍
+            </span>
+          {% endif %}
+      </p>
+    </div>
+
+    <div class="announcement-bottom color-{{ section.settings.color_scheme_bottom }}">
+      <p class="announcement-text">
+       
+        <strong>  {{ section.settings.coupon_text }} {{ section.settings.coupon_code }}</strong>
+        <span>{{ section.settings.offer_message }}</span>
+      </p>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Announcement Bar New",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable",
+      "label": "Enable announcement bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "promo_text",
+      "label": "Top promo text",
+      "default": "Score Big! It's Time to Shop 'til You Drop!"
+    },
+    {
+      "type": "text",
+      "id": "coupon_text",
+      "label": "Coupon message",
+      "default": "Use Code:"
+    },
+    {
+      "type": "text",
+      "id": "coupon_code",
+      "label": "Coupon code",
+      "default": "CENTFREE"
+    },
+    {
+      "type": "text",
+      "id": "offer_message",
+      "label": "Offer message",
+      "default": "for free delivery"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_top",
+      "label": "Color scheme Top",
+      "default": "scheme_1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme_bottom",
+      "label": "Color scheme Bottom",
+      "default": "scheme_1"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_timer",
+      "label": "Show countdown timer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "Countdown end time (YYYY-MM-DD HH:MM)",
+      "default": "2025-12-31 23:59"
+    },
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar New"
+    }
+  ]
+}
+{% endschema %}

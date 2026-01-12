@@ -1,0 +1,177 @@
+{{ 'men-women-tab.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="mw-banner-tabs"
+  data-men-bg="{{ section.settings.men_banner | image_url: width: 2000 }}"
+  data-women-bg="{{ section.settings.women_banner | image_url: width: 2000 }}"
+  style="background-image:url({{ section.settings.men_banner | image_url: width: 2000 }});"
+>
+
+  <div class="mw-tabs-switch">
+    <button class="mw-tab active" data-type="men">MEN</button>
+    <button class="mw-tab" data-type="women">WOMEN</button>
+  </div>
+
+  <div class="mw-content page-width">
+    <div class="mw-left">
+      <h2 class="mw-heading">{{ section.settings.men_heading }}</h2>
+      <p class="mw-text">{{ section.settings.men_text }}</p>
+    </div>
+
+    <div class="mw-right">
+      <div class="mw-products" id="mwProducts"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+ const STORE_URL = "https://training-playground.myshopify.com/api/2024-01/graphql.json";
+  const TOKEN = "c32def0b70bfb30e26cb57b2eac347b2";
+
+  const sectionEl = document.querySelector(".mw-banner-tabs");
+  const productsEl = document.getElementById("mwProducts");
+
+  const contentMap = {
+    men: {
+      bg: sectionEl.dataset.menBg,
+      heading: "{{ section.settings.men_heading | escape }}",
+      text: "{{ section.settings.men_text | escape }}",
+      collection: "{{ section.settings.men_collection }}"
+    },
+    women: {
+      bg: sectionEl.dataset.womenBg,
+      heading: "{{ section.settings.women_heading | escape }}",
+      text: "{{ section.settings.women_text | escape }}",
+      collection: "{{ section.settings.women_collection }}"
+    }
+  };
+
+  async function fetchProducts(collectionHandle) {
+    const res = await fetch(STORE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Storefront-Access-Token": TOKEN
+      },
+      body: JSON.stringify({
+        query: `
+        {
+          collection(handle: "${collectionHandle}") {
+            products(first: 2) {
+              edges {
+                node {
+                  title
+                  handle
+                  images(first: 1) {
+                    edges { node { url } }
+                  }
+                  variants(first: 1) {
+                    edges {
+                      node {
+                        price {
+                          amount
+                          currencyCode
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }`
+      })
+    });
+
+    const data = await res.json();
+    renderProducts(data.data.collection.products.edges);
+  }
+
+  function renderProducts(products) {
+    productsEl.innerHTML = "";
+    products.forEach(({ node }) => {
+      productsEl.innerHTML += `
+        <div class="mw-card">
+          <img src="${node.images.edges[0]?.node.url}" alt="">
+          <h4>${node.title}</h4>
+          <span>Rs.${node.variants.edges[0].node.price.amount}</span>
+          <a href="/products/${node.handle}" class="mw-btn">ADD TO BAG</a>
+        </div>
+      `;
+    });
+  }
+
+  document.querySelectorAll(".mw-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".mw-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      const type = tab.dataset.type;
+      sectionEl.style.backgroundImage = `url(${contentMap[type].bg})`;
+      document.querySelector(".mw-heading").innerText = contentMap[type].heading;
+      document.querySelector(".mw-text").innerText = contentMap[type].text;
+
+      fetchProducts(contentMap[type].collection);
+    });
+  });
+
+  fetchProducts("{{ section.settings.men_collection }}");
+</script>
+
+{% schema %}
+{
+  "name": "Men Women Tab",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "men_banner",
+      "label": "Men Background Banner"
+    },
+    {
+      "type": "text",
+      "id": "men_heading",
+      "default": "Skincare Essentials",
+      "label": "Men Heading"
+    },
+    {
+      "type": "text",
+      "id": "men_text",
+      "default": "Premium skincare curated for men",
+      "label": "Men Text"
+    },
+    {
+      "type": "collection",
+      "id": "men_collection",
+      "label": "Men Collection Handle"
+    },
+
+    {
+      "type": "image_picker",
+      "id": "women_banner",
+      "label": "Women Background Banner"
+    },
+    {
+      "type": "text",
+      "id": "women_heading",
+      "default": "Beauty Essentials",
+      "label": "Women Heading"
+    },
+    {
+      "type": "text",
+      "id": "women_text",
+      "default": "Glow-enhancing skincare for women",
+      "label": "Women Text"
+    },
+    {
+      "type": "collection",
+      "id": "women_collection",
+      "label": "Women Collection Handle"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Men Women Tabs"
+    }
+  ]
+}
+{% endschema %}

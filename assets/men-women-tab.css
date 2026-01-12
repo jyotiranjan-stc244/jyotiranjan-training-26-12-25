@@ -1,0 +1,106 @@
+.mw-banner-tabs {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  padding: 80px 0;
+  color: #fff;
+}
+
+.mw-tabs-switch {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: #c69c6d;
+  border-radius: 30px;
+  padding: 4px;
+  display: flex;
+}
+
+.mw-tab {
+  padding: 8px 22px;
+  border-radius: 30px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mw-tab.active {
+  background: #fff;
+  color: #c46a2f;
+}
+
+.mw-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.mw-left {
+  flex: 1;
+}
+
+.mw-heading {
+   color: #FFFFFF;
+  font-size: 52px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.mw-text {
+  max-width: 380px;
+  margin-top: 12px;
+}
+
+.mw-right {
+  flex: 1;
+}
+
+.mw-products {
+  display: flex;
+  gap: 16px;
+}
+
+.mw-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 14px;
+  color: #000;
+  text-align: center;
+  width: 180px;
+}
+
+.mw-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.mw-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #c46a2f;
+  color: #c46a2f;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .mw-content {
+    flex-direction: column;
+  }
+
+  .mw-products {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .mw-heading {
+    font-size: 36px;
+  }
+}

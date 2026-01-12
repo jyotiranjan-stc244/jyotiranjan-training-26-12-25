@@ -1,0 +1,71 @@
+
+
+.main-doctor-container .doctor-section {
+  padding: 60px 0;
+}
+
+.doctor-section__heading {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.main-doctor-container .doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.main-doctor-container .doctor-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.main-doctor-container .doctor-card__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.main-doctor-container .doctor-card__content {
+  padding: 20px;
+}
+
+.main-doctor-container .doctor-card__name {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.main-doctor-container .doctor-card__designation {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.main-doctor-container .doctor-card__qualification {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.main-doctor-container .doctor-card__description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+  max-height: 4.8em;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .main-doctor-container .doctor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .main-doctor-container .doctor-grid {
+    grid-template-columns: 1fr;
+  }
+}

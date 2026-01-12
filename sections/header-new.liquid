@@ -1,0 +1,292 @@
+{% comment %} <link
+  rel="stylesheet"
+  href="{{ 'navbar-new.css' | asset_url }}"
+  media="print"
+  onload="this.media='all'"
+>
+<noscript>
+  <link rel="stylesheet" href="{{ 'navbar-new.css' | asset_url }}">
+</noscript> {% endcomment %}
+
+{{ 'navbar-new.css' | asset_url | stylesheet_tag }}
+
+{% assign main_menu = section.settings.menu %}
+
+<header class="navbar color-{{ section.settings.color_scheme }}">
+  <div class="navbar__container">
+    <div class="navbar__logo">
+      {% if section.settings.logo != blank %}
+        <a href="{{ routes.root_url }}">
+          <img
+            src="{{ section.settings.logo | image_url: width: 200 }}"
+            alt="{{ shop.name }}"
+            width="400px"
+            height="400px"
+            loading="lazy"
+          >
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="navbar__text-logo">
+          {{ section.settings['navbar__text-logo'] }}
+        </a>
+      {% endif %}
+    </div>
+
+    <nav class="navbar__menu desktop-only">
+      <ul class="menu">
+        {% for link in main_menu.links %}
+          <li class="menu-item {% if link.links != blank %}has-submenu{% endif %}">
+            <a href="{{ link.url }}">{{ link.title }}</a>
+
+            {% if link.links != blank %}
+              {% assign mega_block = null %}
+
+              {% for block in section.blocks %}
+                {% if block.type == 'mega_menu' and block.settings.menu_title == link.title %}
+                  {% assign mega_block = block %}
+                {% endif %}
+              {% endfor %}
+
+              <div class="submenu {% if mega_block %}mega-enabled{% endif %}">
+                {% assign has_grandchildren = false %}
+                {% for child in link.links %}
+                  {% if child.links != blank %}
+                    {% assign has_grandchildren = true %}
+                  {% endif %}
+                {% endfor %}
+
+                {% if has_grandchildren %}
+                  {% if mega_block %}
+                    <div class="submenu-columns">
+                      <div class="submenu-column">
+                        {% for child in link.links %}
+                          <h4>{{ child.title }}</h4>
+                          <ul>
+                            {% for grandchild in child.links %}
+                              <li>
+                                <a href="{{ grandchild.url }}">{{ grandchild.title }}</a>
+                              </li>
+                            {% endfor %}
+                          </ul>
+                        {% endfor %}
+                      </div>
+
+                      <div class="submenu-column">
+                        <div class="mega-images">
+                          {% if mega_block.settings.image_1 %}
+                            <a href="{{ mega_block.settings.link_1 }}" class="mega-card">
+                              <img
+                                width="400"
+                                height="400"
+                                src="{{ mega_block.settings.image_1 | image_url: width: 400 }}"
+                              >
+                              <span>{{ mega_block.settings.title_1 }}</span>
+                            </a>
+                          {% endif %}
+
+                          {% if mega_block.settings.image_2 %}
+                            <a href="{{ mega_block.settings.link_2 }}" class="mega-card">
+                              <img
+                                width="400"
+                                height="400"
+                                src="{{ mega_block.settings.image_2 | image_url: width: 400 }}"
+                              >
+                              <span>{{ mega_block.settings.title_2 }}</span>
+                            </a>
+                          {% endif %}
+
+                          {% if mega_block.settings.image_3 %}
+                            <a href="{{ mega_block.settings.link_3 }}" class="mega-card">
+                              <img
+                                width="400"
+                                height="400"
+                                src="{{ mega_block.settings.image_3 | image_url: width: 400 }}"
+                              >
+                              <span>{{ mega_block.settings.title_3 }}</span>
+                            </a>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% else %}
+                    <ul class="simple-submenu">
+                      {% for child in link.links %}
+                        <li>
+                          <a href="{{ child.url }}">{{ child.title }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endif %}
+              </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {% render 'navbar-icons', section: section %}
+
+    <button class="navbar__hamburger mobile-only" id="hamburgerBtn" aria-label="Open menu">☰</button>
+  </div>
+
+  <div class="mobile-drawer" id="mobileDrawer">
+    <button class="drawer-close" id="drawerClose" aria-label="Close menu">×</button>
+
+    <nav class="mobile-menu">
+      {% for link in main_menu.links %}
+        <div class="mobile-menu__item">
+          <a href="{{ link.url }}">{{ link.title }}</a>
+
+          {% if link.links != blank %}
+            <div class="mobile-submenu">
+              {% for child in link.links %}
+                <div class="mobile-submenu__item">
+                  <a href="{{ child.url }}">{{ child.title }}</a>
+
+                  {% if child.links != blank %}
+                    <div class="mobile-subsubmenu">
+                      {% for grandchild in child.links %}
+                        <a href="{{ grandchild.url }}">{{ grandchild.title }}</a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </nav>
+  </div>
+</header>
+
+<script>
+  const hamburger = document.getElementById('hamburgerBtn');
+  const drawer = document.getElementById('mobileDrawer');
+  const closeBtn = document.getElementById('drawerClose');
+
+  if (hamburger && drawer) {
+    hamburger.addEventListener('click', () => {
+      drawer.classList.add('is-open');
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      drawer.classList.remove('is-open');
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Navbar-new",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "scheme_1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "navbar__text-logo",
+      "default": "CENTELLA",
+      "label": "Logo text"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "label": "Enable country selector",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "label": "Enable language selector",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_customer_avatar",
+      "label": "Enable customer avatar",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Menu title (EXACT match)",
+          "info": "Must match menu item title exactly (e.g. All Products)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image 1"
+        },
+        {
+          "type": "text",
+          "id": "title_1",
+          "label": "Title 1"
+        },
+        {
+          "type": "url",
+          "id": "link_1",
+          "label": "Link 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image 2"
+        },
+        {
+          "type": "text",
+          "id": "title_2",
+          "label": "Title 2"
+        },
+        {
+          "type": "url",
+          "id": "link_2",
+          "label": "Link 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "Image 3"
+        },
+        {
+          "type": "text",
+          "id": "title_3",
+          "label": "Title 3"
+        },
+        {
+          "type": "url",
+          "id": "link_3",
+          "label": "Link 3"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Navbar new"
+    }
+  ]
+}
+{% endschema %}
